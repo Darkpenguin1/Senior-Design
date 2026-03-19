@@ -18,7 +18,6 @@ jobs:
         with:
           webhookUrl: ${{ env.DISCORD_WEBHOOK }}
           text: |
-            🚀 **${{ github.actor }}** triggered a **${{ github.event_name }}**
+            ${{ github.event_name == 'pull_request' && format('📥 **{0}** opened/updated a PR', github.actor) || format('🚀 **{0}** pushed to **{1}**', github.actor, github.ref_name) }}
             📦 Repo: ${{ github.repository }}
-            🌿 Branch: ${{ github.ref_name }}
-            🔗 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            🔗 ${{ github.event_name == 'pull_request' && github.event.pull_request.html_url || format('https://github.com/{0}/commit/{1}', github.repository, github.sha) }}
