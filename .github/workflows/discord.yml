@@ -9,12 +9,14 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
     steps:
       - name: Send Discord notification
-        if: ${{ secrets.DISCORD_WEBHOOK != '' }}
+        if: ${{ env.DISCORD_WEBHOOK != '' }}
         uses: rjstone/discord-webhook-notify@v2
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ env.DISCORD_WEBHOOK }}
           text: |
             🚀 **${{ github.actor }}** triggered a **${{ github.event_name }}**
             📦 Repo: ${{ github.repository }}
