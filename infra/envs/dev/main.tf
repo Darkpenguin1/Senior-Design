@@ -33,16 +33,16 @@ module "lambda_role" {
   ]
 }
 
-# module "lambda_function" {
-#   source = "../../modules/lambda"
+module "lambda_function" {
+  source = "../../modules/lambda"
 
-#   function_name = "workorder-processor-dev"
-#   role_arn      = module.lambda_role.arn
+  function_name = "workorder-processor-dev"
+  role_arn      = module.lambda_role.arn
 
-#   handler  = "lambda_function.lambda_handler"
-#   runtime  = "java25"
-#   filename = "${path.root}/../../lambda/workorder_processor.zip"
-# }
+  handler  = "handler.Handler::handleRequest"
+  runtime  = "java21"
+  filename = "${path.root}/../../services/workorder-processor/target/workorder_processor.jar"
+}
 
 data "aws_iam_policy_document" "developer_passrole_policy" {
   statement {
