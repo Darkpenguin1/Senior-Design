@@ -1,0 +1,77 @@
+name: Deploy Lambda
+
+on:
+  pull_request:
+    paths:
+      - 'services/workorder-processor/**'
+      - '.github/workflows/deploy-lambda.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/workorder-processor/**'
+      - '.github/workflows/deploy-lambda.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build JAR
+        working-directory: services/workorder-processor
+        run: mvn clean package
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: workorder-processor-jar
+          path: services/workorder-processor/target/workorder_processor.jar
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build JAR
+        working-directory: services/workorder-processor
+        run: mvn clean package
+
+      - name: Package deployment zip
+        run: |
+          cd services/workorder-processor/target
+          zip lambda-deploy.zip workorder_processor.jar
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::31894266726:role/deploy-to-staging
+
+      - name: Deploy Lambda code
+        run: |
+          aws lambda update-function-code \
+            --function-name workorder-processor-dev \
+            --zip-file fileb://services/workorder-processor/target/lambda-deploy.zip
