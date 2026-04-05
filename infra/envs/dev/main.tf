@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "deploy_lambda_policy_doc" {
     ]
 
     resources = [
-      "arn:aws:lambda:us-east-1:31894266726:function:workorder-processor-dev"
+      "arn:aws:lambda:us-east-1:318942626726:function:workorder-processor-dev"
     ]
   }
 }
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "staging_workorder_lambda_assume_role" {
     principals {
       type = "Federated"
       identifiers = [
-        "arn:aws:iam::31894266726:oidc-provider/token.actions.githubusercontent.com"
+        "arn:aws:iam::318942626726:oidc-provider/token.actions.githubusercontent.com"
       ]
     }
 

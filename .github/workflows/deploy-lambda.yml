@@ -68,7 +68,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::31894266726:role/deploy-to-staging
+          role-to-assume: arn:aws:iam::318942626726:role/deploy-to-staging
 
       - name: Deploy Lambda code
         run: |
