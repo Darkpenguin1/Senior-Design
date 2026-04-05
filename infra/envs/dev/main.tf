@@ -22,6 +22,68 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 
 }
 
+data "aws_iam_policy_document" "deploy_lambda_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "lambda:GetFunction",
+      "lambda:UpdateFunctionCode"
+    ]
+
+    resources = [
+      "arn:aws:lambda:us-east-1:31894266726:function:workorder-processor-dev"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "deploy_lambda_policy" {
+  name   = "deploy-lambda-policy"
+  policy = data.aws_iam_policy_document.deploy_lambda_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_deploy_lambda_policy" {
+  role       = aws_iam_role.deploy_to_staging.name
+  policy_arn = aws_iam_policy.deploy_lambda_policy.arn
+}
+
+
+data "aws_iam_policy_document" "staging_workorder_lambda_assume_role" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRoleWithWebIdentity"
+    ]
+
+    principals {
+      type = "Federated"
+      identifiers = [
+        "arn:aws:iam::31894266726:oidc-provider/token.actions.githubusercontent.com"
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:Darkpenguin1/Senior-Design:ref:refs/heads/main"]
+    }
+  }
+}
+
+resource "aws_iam_role" "deploy_to_staging" {
+  name = "deploy-to-staging"
+
+  assume_role_policy = data.aws_iam_policy_document.staging_workorder_lambda_assume_role.json
+}
+
+
 module "lambda_role" {
   source = "../../modules/iam-role"
 
@@ -52,9 +114,7 @@ data "aws_iam_policy_document" "developer_passrole_policy" {
       "iam:PassRole"
     ]
 
-    resources = [
-      module.lambda_role.arn
-    ]
+    resources = ["*"]
   }
 
   statement {
@@ -66,6 +126,20 @@ data "aws_iam_policy_document" "developer_passrole_policy" {
       "lambda:UpdateFunctionConfiguration",
       "lambda:GetFunction",
       "lambda:ListFunctions"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "iam:CreateRole",
+      "iam:GetRole",
+      "iam:AttachRolePolicy",
+      "iam:PutRolePolicy",
+      "iam:TagRole"
     ]
 
     resources = ["*"]
