@@ -1,8 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getNotifications } from '../api/client';
+
+// Fallback announcements shown when the notification API is not configured
+// or unreachable (e.g., running locally without VITE_API_BASE_URL set).
+const FALLBACK_NOTIFICATIONS = [
+  {
+    notification_id: 'fallback-1',
+    type: 'notice',
+    title: 'Water shut-off — Building C',
+    message: 'Scheduled 6:00–10:00 AM. Plan ahead.',
+    createdAt: 'Nov 14',
+  },
+  {
+    notification_id: 'fallback-2',
+    type: 'resolved',
+    title: 'Elevators restored — Main Hall',
+    message: 'All elevators are back in service.',
+    createdAt: 'Nov 12',
+  },
+];
+
+const formatDate = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso; // already a display string
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+};
 
 const StudentDashboard = () => {
   // This state controls the popup for the ticket submission
   const [showModal, setShowModal] = useState(false);
+  const [notifications, setNotifications] = useState(FALLBACK_NOTIFICATIONS);
+
+  useEffect(() => {
+    let cancelled = false;
+    getNotifications('student')
+      .then((data) => {
+        if (cancelled) return;
+        if (Array.isArray(data) && data.length > 0) setNotifications(data);
+      })
+      .catch(() => {
+        // Keep the fallback notifications on error.
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
@@ -63,23 +104,31 @@ const StudentDashboard = () => {
               </div>
               
               <div className="space-y-3">
-                <div className="bg-white border-l-4 border-[#A49665] p-4 shadow-sm rounded-r-xl flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#A49665] uppercase tracking-widest">Notice</span>
-                    <h4 className="font-bold text-[#005035]">Water shut-off — Building C</h4>
-                    <p className="text-sm text-gray-600">Scheduled 6:00–10:00 AM. Plan ahead.</p>
-                  </div>
-                  <span className="text-xs text-gray-400 font-medium">Nov 14</span>
-                </div>
-
-                <div className="bg-white border-l-4 border-[#005035] p-4 shadow-sm rounded-r-xl flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#005035] uppercase tracking-widest">Resolved</span>
-                    <h4 className="font-bold text-[#005035]">Elevators restored — Main Hall</h4>
-                    <p className="text-sm text-gray-600">All elevators are back in service.</p>
-                  </div>
-                  <span className="text-xs text-gray-400 font-medium">Nov 12</span>
-                </div>
+                {notifications.map((n) => {
+                  const isResolved = n.type === 'resolved';
+                  const accent = isResolved ? '#005035' : '#A49665';
+                  return (
+                    <div
+                      key={n.notification_id}
+                      className="bg-white border-l-4 p-4 shadow-sm rounded-r-xl flex justify-between items-start"
+                      style={{ borderColor: accent }}
+                    >
+                      <div>
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-widest"
+                          style={{ color: accent }}
+                        >
+                          {n.type || 'Notice'}
+                        </span>
+                        <h4 className="font-bold text-[#005035]">{n.title}</h4>
+                        <p className="text-sm text-gray-600">{n.message}</p>
+                      </div>
+                      <span className="text-xs text-gray-400 font-medium">
+                        {formatDate(n.createdAt)}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </section>
 
