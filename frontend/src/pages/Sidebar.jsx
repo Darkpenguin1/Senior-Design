@@ -18,7 +18,6 @@ const Sidebar = ({ role, userName }) => {
     student: [
       { name: 'Dashboard', path: '/student', icon: '' },
       { name: 'My Tickets', path: '/student/tickets', icon: '' },
-      { name: 'Campus Map', path: '/student/map', icon: '' },
     ],
     contractor: [
       { name: 'Active Jobs', path: '/contractor', icon: '' },

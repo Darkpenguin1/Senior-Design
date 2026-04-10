@@ -1,8 +1,10 @@
 import React from 'react';
+import Sidebar from './Sidebar';
 
 const ManagementDashboard = () => {
   return (
     <div className="flex h-screen bg-gray-100">
+      <Sidebar role="management" userName="Admin User" />
       <div className="w-64 bg-slate-900 text-white p-6">
         <h2 className="text-xl font-black tracking-tighter text-[#A49665] mb-8">ADMIN CONSOLE</h2>
         <nav className="space-y-4 text-sm font-medium">

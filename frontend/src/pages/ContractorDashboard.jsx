@@ -1,9 +1,11 @@
 import React from 'react';
+import Sidebar from './Sidebar';
 
 const ContractorDashboard = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar - Consistent UNCC Green */}
+      <Sidebar role="contractor" userName="Contractor #2" />
       <div className="w-64 bg-[#005035] text-white hidden md:flex flex-col">
         <div className="p-6 text-2xl font-bold border-b border-[#A49665]">Field Portal</div>
         <nav className="flex-1 mt-4">
