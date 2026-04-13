@@ -1,7 +1,8 @@
 package ticketingservicesb.ticketingservicespringboot.repository;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import ticketingservicesb.ticketingservicespringboot.model.Ticket;
 
-@Repository
-public class TicketRepository {
+public interface TicketRepository extends JpaRepository<Ticket, Long>, JpaSpecificationExecutor<Ticket> {
 }
