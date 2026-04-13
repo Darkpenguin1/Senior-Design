@@ -119,6 +119,8 @@ module "lambda_function" {
 
   environment_variables = {
     WORK_ORDERS_TABLE_NAME = module.dynamodb.table_name
+    SES_FROM_EMAIL="frank.e.peraza@gmail.com"
+    SES_TO_EMAIL="frank.e.peraza@gmail.com" # Change demo email later for now frank -> frank email 
   }
 }
 
@@ -205,4 +207,27 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
 resource "aws_iam_role_policy_attachment" "attach_lambda_dynamodb_policy" {
   role       = module.lambda_role.name
   policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
+}
+
+data "aws_iam_policy_document" "lambda_ses_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ses:SendEmail",
+      "ses:SendRawEmail"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "lambda_ses_policy" {
+  name   = "workorder-lambda-ses-dev"
+  policy = data.aws_iam_policy_document.lambda_ses_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_ses_policy" {
+  role       = module.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_ses_policy.arn
 }

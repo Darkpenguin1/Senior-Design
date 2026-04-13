@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.TicketCreatedEvent;
 import service.WorkOrderService;
+import service.EmailService;
 
 public class Handler implements RequestHandler<SQSEvent, Void> {
     
@@ -33,7 +34,8 @@ public class Handler implements RequestHandler<SQSEvent, Void> {
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
         context.getLogger().log("Received " + event.getRecords().size() + " SQS record(s)\n");
-        
+        EmailService emailService = new EmailService();
+        String recipient = System.getenv("SES_TO_EMAIL");
         if (WORK_ORDERS_TABLE_NAME == null || WORK_ORDERS_TABLE_NAME.isBlank()) {
             throw new IllegalStateException("Missing WORK_ORDERS_TABLE_NAME environment variable");
         }
@@ -53,9 +55,28 @@ public class Handler implements RequestHandler<SQSEvent, Void> {
 
                 service.processTicketCreated(ticketEvent);
                 
-                context.getLogger().log(
-                        "Created work order for ticket " + ticketEvent.getTicketId() + "\n"
+                context.getLogger().log("Created work order for ticket " + ticketEvent.getTicketId() + "\n");
+
+                String subject = "New Work Order Created";
+
+                String body = """
+                        A new work order has been created.
+
+                        Ticket ID: %s
+                        Description: %s
+                        Priority: %s
+                        Contractor: %s
+                        """.formatted(
+                        ticketEvent.getTicketId(),
+                        ticketEvent.getDescription(),
+                        ticketEvent.getPriority(),
+                        ticketEvent.getContractorEmail()
                 );
+
+                emailService.sendEmail(recipient, subject, body);
+
+                context.getLogger().log("Email sent successfully\n");
+                
 
             } catch (Exception e) {
                 context.getLogger().log("ERROR processing message: " + e.getMessage() + "\n");
