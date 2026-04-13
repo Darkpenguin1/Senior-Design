@@ -8,6 +8,10 @@ module "dynamodb" {
   }
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
 module "sqs" {
   source = "../../modules/sqs"
 
@@ -230,4 +234,78 @@ resource "aws_iam_policy" "lambda_ses_policy" {
 resource "aws_iam_role_policy_attachment" "attach_lambda_ses_policy" {
   role       = module.lambda_role.name
   policy_arn = aws_iam_policy.lambda_ses_policy.arn
+}
+
+
+module "ecr" {
+  source = "../../modules/ecr"
+
+  name = "ticketing-service"
+}
+
+module "ecs_cluster" {
+  source = "../../modules/ecs-cluster"
+
+  name = "ticketing-cluster-dev"
+}
+
+module "ecs_service" {
+  source = "../../modules/ecs-service"
+
+  name              = "ticketing-service-dev"
+  cluster_id        = module.ecs_cluster.id
+  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:latest"
+  container_port    = 8080
+  aws_region        = "us-east-1"
+  subnet_ids        = var.app_subnet_ids
+  security_group_id = module.security_groups.ecs_service_sg_id
+  target_group_arn  = module.alb.target_group_arn
+
+  environment = {
+    SPRING_DATASOURCE_URL      = "jdbc:postgresql://${module.rds_postgres.endpoint}:5432/ticketing_db"
+    SPRING_DATASOURCE_USERNAME = "postgres"
+    SPRING_DATASOURCE_PASSWORD = var.db_password
+  }
+}
+module "db_subnet_group" {
+  source = "../../modules/db-subnet-group"
+
+  name       = "ticketing-db-subnet-group-dev"
+  subnet_ids = var.db_subnet_ids
+}
+
+module "security_groups" {
+  source = "../../modules/security-groups"
+
+  name              = "ticketing-dev"
+  vpc_id            = data.aws_vpc.default.id
+  app_port          = 8080
+  app_ingress_cidrs = ["0.0.0.0/0"]
+}
+
+module "rds_postgres" {
+  source = "../../modules/rds-postgres"
+
+  identifier           = "ticketing-db-dev"
+  db_name              = "ticketing_db"
+  username             = "postgres"
+  password             = var.db_password
+  db_subnet_group_name = module.db_subnet_group.name
+  security_group_id    = module.security_groups.rds_sg_id
+
+  instance_class       = "db.t3.micro"
+  engine_version       = "16.3"
+  publicly_accessible  = false
+}
+
+module "alb" {
+  source = "../../modules/alb"
+
+  name                  = "ticketing-alb-dev"
+  target_group_name     = "ticketing-tg-dev"
+  vpc_id                = data.aws_vpc.default.id
+  subnet_ids            = var.app_subnet_ids
+  alb_security_group_id = module.security_groups.alb_sg_id
+  target_port           = 8080
+  health_check_path     = "/students"
 }

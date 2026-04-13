@@ -43,19 +43,27 @@ public class TicketService {
     }
 
     public List<Ticket> getTickets(Long studentId, Long contractorId, String status) {
-        Specification<Ticket> spec = Specification.where(null);
+        Specification<Ticket> spec = null;
 
         if (studentId != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("student").get("studentId"), studentId));
-        }
-        if (contractorId != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("contractor").get("id"), contractorId));
-        }
-        if (status != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+            Specification<Ticket> studentSpec =
+                    (root, query, cb) -> cb.equal(root.get("student").get("studentId"), studentId);
+            spec = (spec == null) ? studentSpec : spec.and(studentSpec);
         }
 
-        return ticketRepository.findAll(spec);
+        if (contractorId != null) {
+            Specification<Ticket> contractorSpec =
+                    (root, query, cb) -> cb.equal(root.get("contractor").get("id"), contractorId);
+            spec = (spec == null) ? contractorSpec : spec.and(contractorSpec);
+        }
+
+        if (status != null) {
+            Specification<Ticket> statusSpec =
+                    (root, query, cb) -> cb.equal(root.get("status"), status);
+            spec = (spec == null) ? statusSpec : spec.and(statusSpec);
+        }
+
+        return (spec == null) ? ticketRepository.findAll() : ticketRepository.findAll(spec);
     }
 
     public Ticket getTicketById(Long id) {

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ContractorRepository extends JpaRepository<Contractor, Long> {
 
-    List<Contractor> findByClockedIn(Boolean clockedIn);
+    List<Contractor> findByClockedInIs(Boolean clockedIn);
 }
