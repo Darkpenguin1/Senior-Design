@@ -8,6 +8,17 @@ module "dynamodb" {
   }
 }
 
+module "sqs" {
+  source = "../../modules/sqs"
+
+  name = "work-order-queue-dev"
+
+  tags = {
+    Project = "SeniorDesign"
+    Env     = "dev"
+  }
+}
+
 data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
     effect = "Allow"
@@ -91,7 +102,8 @@ module "lambda_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 
   policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
   ]
 }
 
@@ -104,6 +116,20 @@ module "lambda_function" {
   handler  = "handler.Handler::handleRequest"
   runtime  = "java21"
   filename = "${path.root}/../../../services/workorder-processor/target/workorder_processor.jar"
+
+  environment_variables = {
+    WORK_ORDERS_TABLE_NAME = module.dynamodb.table_name
+    SES_FROM_EMAIL         = "frank.e.peraza@gmail.com"
+    SES_TO_EMAIL           = "jmcken19@charlotte.edu" # Change demo email later for now frank -> frank email 
+  }
+}
+
+resource "aws_lambda_event_source_mapping" "sqs_trigger" {
+  event_source_arn = module.sqs.queue_arn
+  function_name    = module.lambda_function.function_arn
+
+  batch_size = 1
+  enabled    = true
 }
 
 data "aws_iam_policy_document" "developer_passrole_policy" {
@@ -155,4 +181,53 @@ resource "aws_iam_policy" "developer_lambda_policy" {
 resource "aws_iam_group_policy_attachment" "attach_dev_group_policy" {
   group      = "DevGroup"
   policy_arn = aws_iam_policy.developer_lambda_policy.arn
+}
+
+data "aws_iam_policy_document" "lambda_dynamodb_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "dynamodb:PutItem",
+      "dynamodb:GetItem",
+      "dynamodb:UpdateItem"
+    ]
+
+    resources = [
+      module.dynamodb.table_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  name   = "workorder-lambda-dynamodb-dev"
+  policy = data.aws_iam_policy_document.lambda_dynamodb_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_dynamodb_policy" {
+  role       = module.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
+}
+
+data "aws_iam_policy_document" "lambda_ses_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "ses:SendEmail",
+      "ses:SendRawEmail"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "lambda_ses_policy" {
+  name   = "workorder-lambda-ses-dev"
+  policy = data.aws_iam_policy_document.lambda_ses_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_ses_policy" {
+  role       = module.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_ses_policy.arn
 }

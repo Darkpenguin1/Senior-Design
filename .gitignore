@@ -3,3 +3,14 @@
 *.tfstate
 *.tfstate.*
 crash.log
+
+# Maven build output
+target/
+
+# Compiled class files
+*.class
+
+# Packaged artifacts
+*.jar
+*.war
+*.ear
