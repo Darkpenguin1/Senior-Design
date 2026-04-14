@@ -4,6 +4,7 @@ import Sidebar from '../pages/Sidebar';
 const StudentDashboard = () => {
   // This state controls the popup for the ticket submission
   const [showModal, setShowModal] = useState(false);
+  const username = (localStorage.getItem("email") || "").split("@")[0] || "User";
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
@@ -39,7 +40,7 @@ const StudentDashboard = () => {
             {/* Header & Stats Row */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <h2 className="text-3xl font-extrabold text-gray-900">Good morning, User </h2>
+                <h2 className="text-3xl font-extrabold text-gray-900">Good morning, {username} </h2>
                 <p className="text-gray-500 mt-1">Here is your current ticket status overview.</p>
               </div>
               
