@@ -265,7 +265,7 @@ module "ecs_service" {
     SPRING_DATASOURCE_URL      = "jdbc:postgresql://${module.rds_postgres.endpoint}:5432/ticketing_db"
     SPRING_DATASOURCE_USERNAME = "postgres"
     SPRING_DATASOURCE_PASSWORD = var.db_password
-    WORK_ORDER_QUEUE_URL = module.sqs.queue_url
+    WORK_ORDER_QUEUE_URL       = module.sqs.queue_url
   }
 }
 module "db_subnet_group" {
@@ -314,17 +314,17 @@ module "alb" {
 module "cdn" {
   source = "../../modules/cdn"
 
-  comment                  = "pickfix-cloudfront"
-  default_root_object      = "index.html"
-  price_class              = "PriceClass_All"
-  is_ipv6_enabled          = true
+  comment             = "pickfix-cloudfront"
+  default_root_object = "index.html"
+  price_class         = "PriceClass_All"
+  is_ipv6_enabled     = true
 
   origin_domain_name       = "pickfix-uncc-spring-2026.s3.amazonaws.com"
   origin_id                = "pickfix-uncc-spring-2026.s3.amazonaws.com-mnxdyf4aunv"
   origin_access_control_id = "E3SA6NA5TCMR8X"
 
-  alb_domain_name          = module.alb.alb_dns_name
-  alb_origin_id            = "ticketing-alb-origin"
+  alb_domain_name = module.alb.alb_dns_name
+  alb_origin_id   = "ticketing-alb-origin"
 
   tags = {
     Name = "pickfix-cloudfront"

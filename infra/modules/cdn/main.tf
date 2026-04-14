@@ -41,14 +41,14 @@ resource "aws_cloudfront_distribution" "this" {
 
   # /api/* -> ALB backend
   ordered_cache_behavior {
-    path_pattern           = "/api/*"
-    target_origin_id       = var.alb_origin_id
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
-    cached_methods         = ["GET", "HEAD", "OPTIONS"]
-    cache_policy_id        = var.api_cache_policy_id
+    path_pattern             = "/api/*"
+    target_origin_id         = var.alb_origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods           = ["GET", "HEAD", "OPTIONS"]
+    cache_policy_id          = var.api_cache_policy_id
     origin_request_policy_id = var.api_origin_request_policy_id
-    compress               = true
+    compress                 = true
   }
 
   custom_error_response {
