@@ -1,7 +1,6 @@
 package model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
 
 public class TicketCreatedEvent {
 
@@ -21,7 +20,7 @@ public class TicketCreatedEvent {
     private String title;
 
     @JsonProperty("createdAt")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     // Default constructor (required for Jackson)
     public TicketCreatedEvent() {}
@@ -33,7 +32,7 @@ public class TicketCreatedEvent {
             String contractorEmail,
             String priority,
             String title,
-            LocalDateTime createdAt
+            String createdAt
     ) {
         this.ticketId = ticketId;
         this.description = description;
@@ -85,11 +84,11 @@ public class TicketCreatedEvent {
         this.title = title;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 }

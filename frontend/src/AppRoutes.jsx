@@ -17,19 +17,10 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/signin/:role" element={<AuthForm />} />
-        <Route
-          path="/student"
-          element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>}
-        />
-        <Route
-          path="/contractor"
-          element={<ProtectedRoute role="contractor"><ContractorDashboard /></ProtectedRoute>}
-        />
-        <Route
-          path="/management"
-          element={<ProtectedRoute role="management"><ManagementDashboard /></ProtectedRoute>}
-        />
+        <Route path="/student" element={<StudentDashboard />} />
+        <Route path="/contractor" element={<ContractorDashboard />} />
+        <Route path="/management" element={<ManagementDashboard />} />
+        <Route path="/student/tickets" element={<StudentTickets />} />
       </Routes>
     </BrowserRouter>
   );

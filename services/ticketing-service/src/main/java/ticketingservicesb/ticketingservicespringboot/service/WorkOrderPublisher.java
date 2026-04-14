@@ -14,14 +14,13 @@ import java.util.Map;
 public class WorkOrderPublisher {
 
     private final SqsClient sqsClient;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${work.order.queue.url}")
     private String queueUrl;
 
-    public WorkOrderPublisher(SqsClient sqsClient, ObjectMapper objectMapper) {
+    public WorkOrderPublisher(SqsClient sqsClient) {
         this.sqsClient = sqsClient;
-        this.objectMapper = objectMapper;
     }
 
     public void publishTicketCreated(Ticket ticket) {
@@ -32,9 +31,8 @@ public class WorkOrderPublisher {
             payload.put("description", ticket.getDescription());
             payload.put("priority", ticket.getPriority().name());
             payload.put("contractorEmail",
-                ticket.getContractor() != null ? ticket.getContractor().getEmail() : "example@email.com"
-            );
-            payload.put("createdAt", ticket.getCreatedAt());
+                    ticket.getContractor() != null ? ticket.getContractor().getEmail() : "frank.e.peraza@gmail.com"); // hardcode frank email if failed to fetch
+            payload.put("createdAt", ticket.getCreatedAt() != null ? ticket.getCreatedAt().toString() : null);
 
             String messageBody = objectMapper.writeValueAsString(payload);
 
