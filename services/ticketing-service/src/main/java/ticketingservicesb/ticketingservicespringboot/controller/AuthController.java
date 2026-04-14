@@ -85,6 +85,15 @@ public class AuthController {
         validate(request);
         String email = request.email().trim().toLowerCase();
 
+        // TEMP: hardcoded test account — remove once real login is complete.
+        if ("test@test.com".equals(email) && "password".equals(request.password())) {
+            String role = request.role();
+            if ("student".equals(role) || "contractor".equals(role) || "management".equals(role)) {
+                String token = jwtService.generate(-1L, email, role);
+                return ResponseEntity.ok(new AuthResponse(-1L, email, role, token));
+            }
+        }
+
         switch (request.role()) {
             case "student" -> {
                 Student s = studentRepository.findByEmail(email).orElseThrow(AuthController::unauthorized);
