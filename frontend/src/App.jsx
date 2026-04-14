@@ -9,7 +9,8 @@ import "./App.css";
 
 const ProtectedRoute = ({ role, children }) => {
   const storedRole = localStorage.getItem("role");
-  if (storedRole !== role) return <Navigate to="/signin" replace />;
+  const token = localStorage.getItem("token");
+  if (!token || storedRole !== role) return <Navigate to="/signin" replace />;
   return children;
 };
 

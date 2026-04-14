@@ -29,7 +29,18 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
-  # Default behavior -> S3 frontend
+  # Uploads origin: S3
+  origin {
+    domain_name              = var.uploads_origin_domain_name
+    origin_id                = var.uploads_origin_id
+    origin_access_control_id = var.uploads_origin_access_control_id
+
+    s3_origin_config {
+      origin_access_identity = ""
+    }
+  }
+
+  # Default behavior -> frontend bucket
   default_cache_behavior {
     target_origin_id       = var.origin_id
     viewer_protocol_policy = var.viewer_protocol_policy
@@ -49,6 +60,17 @@ resource "aws_cloudfront_distribution" "this" {
     cache_policy_id          = var.api_cache_policy_id
     origin_request_policy_id = var.api_origin_request_policy_id
     compress                 = true
+  }
+
+  # /uploads/* -> uploads bucket
+  ordered_cache_behavior {
+    path_pattern           = "/uploads/*"
+    target_origin_id       = var.uploads_origin_id
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
+    cache_policy_id        = var.cache_policy_id
+    compress               = true
   }
 
   custom_error_response {

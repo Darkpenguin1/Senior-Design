@@ -114,3 +114,20 @@ variable "api_origin_request_policy_id" {
   description = "Origin request policy for API behavior"
   default     = "216adef6-5c7f-47e4-b989-5492eafa07d3"
 }
+
+variable "uploads_origin_domain_name" {
+  type        = string
+  description = "Uploads S3 origin domain name"
+}
+
+variable "uploads_origin_id" {
+  type        = string
+  description = "Uploads S3 origin ID"
+  default     = "uploads-s3-origin"
+}
+
+variable "uploads_origin_access_control_id" {
+  type        = string
+  description = "Origin Access Control ID for uploads S3 bucket"
+}
+
