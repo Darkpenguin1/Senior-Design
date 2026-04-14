@@ -266,9 +266,9 @@ module "ecs_service" {
     SPRING_DATASOURCE_USERNAME = "postgres"
     SPRING_DATASOURCE_PASSWORD = var.db_password
     WORK_ORDER_QUEUE_URL       = module.sqs.queue_url
-    AWS_S3_BUCKET = module.ticket_images_bucket.bucket_name
+    AWS_S3_BUCKET              = module.ticket_images_bucket.bucket_name
     AWS_REGION                 = "us-east-1"
-    AWS_CDN_URL = module.cdn.distribution_domain_name
+    AWS_CDN_URL                = module.cdn.distribution_domain_name
   }
 }
 module "db_subnet_group" {
@@ -369,7 +369,7 @@ resource "aws_iam_role_policy_attachment" "ecs_sqs_attach" {
 module "ticket_images_bucket" {
   source      = "../../modules/s3"
   bucket_name = "pickfix-ticket-images-dev-318942626726"
-  
+
   tags = {
     Project = "SeniorDesign"
     Env     = "dev"
