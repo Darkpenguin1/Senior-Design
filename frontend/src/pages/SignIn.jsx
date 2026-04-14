@@ -5,8 +5,7 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const handleLogin = (role) => {
-    localStorage.setItem("role", role);
-    navigate(`/${role}`);
+    navigate(`/signin/${role}`);
   };
 
   return (

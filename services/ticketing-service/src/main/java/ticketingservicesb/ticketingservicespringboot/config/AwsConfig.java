@@ -1,5 +1,6 @@
 package ticketingservicesb.ticketingservicespringboot.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,5 +17,8 @@ public class AwsConfig {
     @Bean
     public S3Client s3Client() {
         return S3Client.create();
+    }
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }
