@@ -254,7 +254,7 @@ module "ecs_service" {
 
   name              = "ticketing-service-dev"
   cluster_id        = module.ecs_cluster.id
-  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v1"
+  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v2"
   container_port    = 8080
   aws_region        = "us-east-1"
   subnet_ids        = var.app_subnet_ids
@@ -308,7 +308,7 @@ module "alb" {
   subnet_ids            = var.app_subnet_ids
   alb_security_group_id = module.security_groups.alb_sg_id
   target_port           = 8080
-  health_check_path     = "/api/students"
+  health_check_path     = "/api/health"
 }
 
 module "cdn" {
