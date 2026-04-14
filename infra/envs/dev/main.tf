@@ -254,7 +254,7 @@ module "ecs_service" {
 
   name              = "ticketing-service-dev"
   cluster_id        = module.ecs_cluster.id
-  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:latest"
+  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v1"
   container_port    = 8080
   aws_region        = "us-east-1"
   subnet_ids        = var.app_subnet_ids
@@ -265,6 +265,7 @@ module "ecs_service" {
     SPRING_DATASOURCE_URL      = "jdbc:postgresql://${module.rds_postgres.endpoint}:5432/ticketing_db"
     SPRING_DATASOURCE_USERNAME = "postgres"
     SPRING_DATASOURCE_PASSWORD = var.db_password
+    WORK_ORDER_QUEUE_URL       = module.sqs.queue_url
   }
 }
 module "db_subnet_group" {
@@ -307,5 +308,50 @@ module "alb" {
   subnet_ids            = var.app_subnet_ids
   alb_security_group_id = module.security_groups.alb_sg_id
   target_port           = 8080
-  health_check_path     = "/students"
+  health_check_path     = "/api/students"
+}
+
+module "cdn" {
+  source = "../../modules/cdn"
+
+  comment             = "pickfix-cloudfront"
+  default_root_object = "index.html"
+  price_class         = "PriceClass_All"
+  is_ipv6_enabled     = true
+
+  origin_domain_name       = "pickfix-uncc-spring-2026.s3.amazonaws.com"
+  origin_id                = "pickfix-uncc-spring-2026.s3.amazonaws.com-mnxdyf4aunv"
+  origin_access_control_id = "E3SA6NA5TCMR8X"
+
+  alb_domain_name = module.alb.alb_dns_name
+  alb_origin_id   = "ticketing-alb-origin"
+
+  tags = {
+    Name = "pickfix-cloudfront"
+  }
+}
+
+
+data "aws_iam_policy_document" "ecs_sqs_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      module.sqs.queue_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "ecs_sqs_policy" {
+  name   = "ecs-sqs-policy-dev"
+  policy = data.aws_iam_policy_document.ecs_sqs_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_sqs_attach" {
+  role       = module.ecs_service.task_role_name
+  policy_arn = aws_iam_policy.ecs_sqs_policy.arn
 }

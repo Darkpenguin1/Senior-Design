@@ -35,6 +35,7 @@ public class ContractorService {
         existing.setName(updated.getName());
         existing.setLocation(updated.getLocation());
         existing.setClockedIn(updated.getClockedIn());
+        existing.setEmail(updated.getEmail());
         return contractorRepository.save(existing);
     }
 

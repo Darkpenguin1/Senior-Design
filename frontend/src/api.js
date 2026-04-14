@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8080", //Springboot API
+  baseURL: "/api", //Springboot API either prod or local 
   headers: { "Content-Type": "application/json" },
 });
 

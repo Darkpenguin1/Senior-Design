@@ -16,6 +16,10 @@ public class Contractor {
 
     private String location;
 
+    @Column(nullable = false, unique = true)
+    private String email;
+
+
     @Column(nullable = false)
     private Boolean clockedIn = false;
 
@@ -62,5 +66,13 @@ public class Contractor {
 
     public void setCurrentTickets(List<Ticket> currentTickets) {
         this.currentTickets = currentTickets;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

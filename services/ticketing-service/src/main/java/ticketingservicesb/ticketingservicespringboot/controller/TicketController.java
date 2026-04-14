@@ -9,7 +9,7 @@ import ticketingservicesb.ticketingservicespringboot.service.TicketService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tickets")
+@RequestMapping("/api/tickets")
 public class TicketController {
 
     private final TicketService ticketService;

@@ -19,13 +19,16 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final StudentRepository studentRepository;
     private final ContractorRepository contractorRepository;
+    private final WorkOrderPublisher workOrderPublisher;
 
     public TicketService(TicketRepository ticketRepository,
                          StudentRepository studentRepository,
-                         ContractorRepository contractorRepository) {
+                         ContractorRepository contractorRepository, 
+                        WorkOrderPublisher workOrderPublisher) {
         this.ticketRepository = ticketRepository;
         this.studentRepository = studentRepository;
         this.contractorRepository = contractorRepository;
+        this.workOrderPublisher = workOrderPublisher;
     }
 
     public Ticket createTicket(Ticket ticket, Long studentId, Long contractorId) {
@@ -39,7 +42,10 @@ public class TicketService {
             ticket.setContractor(contractor);
         }
 
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+        workOrderPublisher.publishTicketCreated(savedTicket);
+
+        return savedTicket;
     }
 
     public List<Ticket> getTickets(Long studentId, Long contractorId, String status) {
@@ -77,6 +83,7 @@ public class TicketService {
         existing.setDescription(updated.getDescription());
         existing.setStatus(updated.getStatus());
         existing.setPhotoUrls(updated.getPhotoUrls());
+        existing.setPriority(updated.getPriority());
 
         if (contractorId != null) {
             Contractor contractor = contractorRepository.findById(contractorId)

@@ -50,6 +50,10 @@ public class Ticket {
         this.updatedAt = LocalDateTime.now();
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Priority priority = Priority.MEDIUM;
+
     public Ticket() {}
 
     public Long getId() {
@@ -114,5 +118,13 @@ public class Ticket {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
     }
 }

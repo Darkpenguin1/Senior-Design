@@ -9,7 +9,7 @@ import ticketingservicesb.ticketingservicespringboot.service.StudentService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentService studentService;

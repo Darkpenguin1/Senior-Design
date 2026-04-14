@@ -9,7 +9,7 @@ import ticketingservicesb.ticketingservicespringboot.service.ContractorService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/contractors")
+@RequestMapping("/api/contractors")
 public class ContractorController {
 
     private final ContractorService contractorService;
