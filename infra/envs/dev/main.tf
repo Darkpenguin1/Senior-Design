@@ -254,7 +254,7 @@ module "ecs_service" {
 
   name              = "ticketing-service-dev"
   cluster_id        = module.ecs_cluster.id
-  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v6" # REMEMBER TO UPDATE THIS MANUALLY AHHHHHHHHHHHHHH
+  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v8" # REMEMBER TO UPDATE THIS MANUALLY AHHHHHHHHHHHHHH
   container_port    = 8080
   aws_region        = "us-east-1"
   subnet_ids        = var.app_subnet_ids
@@ -266,6 +266,9 @@ module "ecs_service" {
     SPRING_DATASOURCE_USERNAME = "postgres"
     SPRING_DATASOURCE_PASSWORD = var.db_password
     WORK_ORDER_QUEUE_URL       = module.sqs.queue_url
+    AWS_S3_BUCKET = module.ticket_images_bucket.bucket_name
+    AWS_REGION                 = "us-east-1"
+    AWS_CDN_URL = module.cdn.distribution_domain_name
   }
 }
 module "db_subnet_group" {
@@ -319,12 +322,19 @@ module "cdn" {
   price_class         = "PriceClass_All"
   is_ipv6_enabled     = true
 
+  # Frontend bucket
   origin_domain_name       = "pickfix-uncc-spring-2026.s3.amazonaws.com"
   origin_id                = "pickfix-uncc-spring-2026.s3.amazonaws.com-mnxdyf4aunv"
   origin_access_control_id = "E3SA6NA5TCMR8X"
 
+  # API backend
   alb_domain_name = module.alb.alb_dns_name
   alb_origin_id   = "ticketing-alb-origin"
+
+  # Uploads bucket
+  uploads_origin_domain_name       = module.ticket_images_bucket.bucket_regional_domain_name
+  uploads_origin_id                = "ticket-images-origin"
+  uploads_origin_access_control_id = "E3SA6NA5TCMR8X"
 
   tags = {
     Name = "pickfix-cloudfront"
@@ -354,4 +364,61 @@ resource "aws_iam_policy" "ecs_sqs_policy" {
 resource "aws_iam_role_policy_attachment" "ecs_sqs_attach" {
   role       = module.ecs_service.task_role_name
   policy_arn = aws_iam_policy.ecs_sqs_policy.arn
+}
+
+module "ticket_images_bucket" {
+  source      = "../../modules/s3"
+  bucket_name = "pickfix-ticket-images-dev-318942626726"
+  
+  tags = {
+    Project = "SeniorDesign"
+    Env     = "dev"
+  }
+}
+
+data "aws_iam_policy_document" "ecs_s3_upload_policy_doc" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:PutObject"
+    ]
+
+    resources = [
+      "${module.ticket_images_bucket.bucket_arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "ecs_s3_upload_policy" {
+  name   = "ecs-s3-upload-policy-dev"
+  policy = data.aws_iam_policy_document.ecs_s3_upload_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_s3_upload_attach" {
+  role       = module.ecs_service.task_role_name
+  policy_arn = aws_iam_policy.ecs_s3_upload_policy.arn
+}
+resource "aws_s3_bucket_policy" "ticket_images_policy" {
+  bucket = module.ticket_images_bucket.bucket_id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontRead"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${module.ticket_images_bucket.bucket_arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = module.cdn.distribution_arn
+          }
+        }
+      }
+    ]
+  })
 }
