@@ -125,7 +125,7 @@ module "lambda_function" {
     WORK_ORDERS_TABLE_NAME = module.dynamodb.table_name
     SES_FROM_EMAIL         = "frank.e.peraza@gmail.com"
     SES_TO_EMAIL           = "frank.e.peraza@gmail.com" # Change demo email later for now frank -> frank email 
-  } # jmcken19@charlotte.edu
+  }                                                     # jmcken19@charlotte.edu
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
