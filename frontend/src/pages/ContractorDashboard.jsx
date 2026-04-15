@@ -36,21 +36,19 @@ const ContractorDashboard = () => {
   }, []);
 
   const handleStatusUpdate = async (ticket) => {
-    const next = NEXT_STATUS[ticket.status];
-    if (!next) return;
-    setUpdating(ticket.id);
-    try {
-      await api.patch(`/tickets/${ticket.id}`, { status: next });
-      setTickets((prev) =>
-        prev.map((t) => (t.id === ticket.id ? { ...t, status: next } : t))
-      );
-    } catch (err) {
-      console.error("Failed to update ticket:", err);
-      alert("Could not update ticket status.");
-    } finally {
-      setUpdating(null);
-    }
-  };
+  const next = NEXT_STATUS[ticket.status];
+  if (!next) return;
+  setUpdating(ticket.id);
+  try {
+    await api.patch(`/tickets/${ticket.id}`, { status: next });
+    await fetchTickets();
+  } catch (err) {
+    console.error("Failed to update ticket:", err);
+    alert("Could not update ticket status.");
+  } finally {
+    setUpdating(null);
+  }
+};
 
   const active   = tickets.find((t)  => t.status === "IN_PROGRESS");
   const queue    = tickets.filter((t) => t.status === "OPEN");
