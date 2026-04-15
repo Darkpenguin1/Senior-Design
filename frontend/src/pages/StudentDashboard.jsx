@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../pages/Sidebar";
 import api from "../api";
 
@@ -6,6 +6,7 @@ const StudentDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tickets, setTickets] = useState([]);
 
   const username = (localStorage.getItem("email") || "").split("@")[0] || "User";
   const studentId = localStorage.getItem("studentId") || localStorage.getItem("userId") || "1";
@@ -13,7 +14,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchMyTickets = async () => {
       try {
-        const { data } = await api.get('/tickets?studentId=${studentId}');
+        const { data } = await api.get(`/tickets?studentId=${studentId}`);
         setTickets(data);
       } catch (err) {
         console.error("Failed to load tickets!", err);
@@ -74,7 +75,7 @@ const StudentDashboard = () => {
       console.log("Created ticket:", data);
       alert("Ticket submitted successfully!");
 
-      const { data: updated } = await api.get('./tickets?studentId=${studentId}');
+      const { data: updated } = await api.get(`/tickets?studentId=${studentId}`);
       setTickets(updated);
 
       setSelectedFile(null);
