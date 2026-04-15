@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-IMAGE_TAG="v8"
+IMAGE_TAG="v9"
 ACCOUNT_ID="318942626726"
 REGION="us-east-1"
 REPO="ticketing-service"

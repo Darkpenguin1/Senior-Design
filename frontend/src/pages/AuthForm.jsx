@@ -34,6 +34,12 @@ const AuthForm = () => {
     try {
       const endpoint = mode === "login" ? "/auth/login" : "/auth/signup";
       const { data } = await api.post(endpoint, { email, password, role });
+      // const data = {
+      //   role,
+      //   id: 1,
+      //   email,
+      // };
+      // localStorage.removeItem("token");
       if (data.token) localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
       localStorage.setItem("userId", String(data.id));
