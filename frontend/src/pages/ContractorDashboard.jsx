@@ -40,10 +40,14 @@ const ContractorDashboard = () => {
     if (!next) return;
     setUpdating(ticket.id);
     try {
-      await api.patch(`/tickets/${ticket.id}`, { status: next });
-      setTickets((prev) =>
-        prev.map((t) => (t.id === ticket.id ? { ...t, status: next } : t))
-      );
+      await api.put(`/tickets/${ticket.id}`, {
+        title: ticket.title,
+        description: ticket.description,
+        status: next,
+        photoUrls: ticket.photoUrls,
+        priority: ticket.priority,
+      });
+      await fetchTickets();
     } catch (err) {
       console.error("Failed to update ticket:", err);
       alert("Could not update ticket status.");
