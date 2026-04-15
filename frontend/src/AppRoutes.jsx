@@ -4,6 +4,7 @@ import AuthForm from "./pages/AuthForm";
 import StudentDashboard from "./pages/StudentDashboard";
 import ContractorDashboard from "./pages/ContractorDashboard";
 import ManagementDashboard from "./pages/ManagementDashboard";
+import SignUp from "./pages/SignUp";
 
 const ProtectedRoute = ({ role, children }) => {
   const storedRole = localStorage.getItem("role");
@@ -21,6 +22,7 @@ function AppRoutes() {
         <Route path="/contractor" element={<ContractorDashboard />} />
         <Route path="/management" element={<ManagementDashboard />} />
         <Route path="/student/tickets" element={<StudentTickets />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </BrowserRouter>
   );
