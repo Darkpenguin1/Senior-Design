@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import api from "../api";
+import AssignContractorModal from "./AssignContractorModal";
 
 const STATUS_STYLES = {
   OPEN: "bg-blue-100 text-blue-800",
@@ -11,6 +12,7 @@ const STATUS_STYLES = {
 const ManagementDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [assignTicketId, setAssignTicketId] = useState(null);
 
   const fetchTickets = async () => {
     try {
@@ -109,6 +111,7 @@ const ManagementDashboard = () => {
                     <th className="p-4">Status</th>
                     <th className="p-4">Assigned To</th>
                     <th className="p-4">Photo</th>
+                    <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -148,6 +151,14 @@ const ManagementDashboard = () => {
                       <td className="p-4">
                         {renderPhoto(ticket.photoUrls)}
                       </td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => setAssignTicketId(ticket.id)}
+                          className="bg-white border-2 border-gray-100 text-gray-600 hover:border-[#A49665] hover:text-[#A49665] px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm"
+                        >
+                          Assign
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -157,6 +168,17 @@ const ManagementDashboard = () => {
 
         </main>
       </div>
+
+      {assignTicketId && (
+        <AssignContractorModal
+          ticketId={assignTicketId}
+          onClose={() => setAssignTicketId(null)}
+          onAssigned={() => {
+            setAssignTicketId(null);
+            fetchTickets();
+          }}
+        />
+      )}
     </div>
   );
 };
