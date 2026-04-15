@@ -63,6 +63,24 @@ const SignIn = () => {
           </button>
         </div>
 
+        
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+              Don't have an account?{' '}
+          <button 
+          onClick={() => navigate('/signup')} 
+        className="text-[#005035] font-bold hover:underline cursor-pointer"
+        >
+          Sign Up
+    </button>
+  </p>
+</div>
+
+{/* Footer info */}
+<div className="mt-6 pt-6 border-t border-gray-100 text-center">
+  <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Senior Design Project 2026</p>
+</div>
+
         {/* Footer info */}
         <div className="mt-10 pt-6 border-t border-gray-100 text-center">
           <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Senior Design Project 2026</p>
