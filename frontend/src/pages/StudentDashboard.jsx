@@ -10,6 +10,19 @@ const StudentDashboard = () => {
   const username = (localStorage.getItem("email") || "").split("@")[0] || "User";
   const studentId = localStorage.getItem("studentId") || localStorage.getItem("userId") || "1";
 
+  useEffect(() => {
+    const fetchMyTickets = async () => {
+      try {
+        const { data } = await api.get('/tickets?studentId=${studentId}');
+        setTickets(data);
+      } catch (err) {
+        console.error("Failed to load tickets!", err);
+      
+      }
+    };
+    fetchMyTickets();
+  }, []);
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0] || null;
     setSelectedFile(file);
@@ -61,6 +74,9 @@ const StudentDashboard = () => {
       console.log("Created ticket:", data);
       alert("Ticket submitted successfully!");
 
+      const { data: updated } = await api.get('./tickets?studentId=${studentId}');
+      setTickets(updated);
+
       setSelectedFile(null);
       setShowModal(false);
       e.target.reset();
@@ -103,9 +119,9 @@ const StudentDashboard = () => {
 
               <div className="flex gap-4">
                 {[
-                  { label: "OPEN", count: 2, color: "border-blue-500" },
-                  { label: "ACTIVE", count: 1, color: "border-[#A49665]" },
-                  { label: "DONE", count: 5, color: "border-[#005035]" },
+                  { label: "OPEN", count: tickets.filter((t) => t.status === "OPEN").length, color: "border-blue-500" },
+                  { label: "ACTIVE", count: tickets.filter((t) => t.status === "IN_PROGRESS").length , color: "border-[#A49665]" },
+                  { label: "DONE", count: tickets.filter((t) => t.status === "DONE").length, color: "border-[#005035]" },
                 ].map((stat) => (
                   <div
                     key={stat.label}

@@ -17,17 +17,12 @@ const Sidebar = ({ role, userName }) => {
   const menuItems = {
     student: [
       { name: 'Dashboard', path: '/student', icon: '' },
-      { name: 'My Tickets', path: '/student/tickets', icon: '' },
     ],
     contractor: [
       { name: 'Active Jobs', path: '/contractor', icon: '' },
-      { name: 'Inventory', path: '/contractor/inventory', icon: '' },
-      { name: 'Schedule', path: '/contractor/schedule', icon: '' },
     ],
     management: [
       { name: 'Overview', path: '/management', icon: '' },
-      { name: 'Staffing', path: '/management/staff', icon: '' },
-      { name: 'Reports', path: '/management/reports', icon: '' },
     ]
   };
 
