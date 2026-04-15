@@ -46,20 +46,20 @@ const ManagementDashboard = () => {
     return `${avg.toFixed(1)} hrs`;
   };
 
-  const renderPhoto = (photoUrls) => {
-    if (photoUrls && photoUrls[0]) {
-      return (
-        <a>
-          href={photoUrls[0]}
-          target="_blank"
-          rel="noreferrer"
-          className="text-[#005035] font-bold text-xs hover:underline"
-          View
-        </a>
-      );
-    }
+const renderPhoto = (photoUrls) => {
+  if (!photoUrls || photoUrls.length === 0) {
     return <span className="text-gray-300 text-xs">—</span>;
-  };
+  }
+  return (
+    <div className="flex flex-wrap gap-2">
+      {photoUrls.map((url, index) => (
+        <a key={index} href={url} target="_blank" rel="noreferrer">
+          <img src={url} alt="ticket" className="w-16 h-16 object-cover rounded-lg hover:opacity-80 transition" />
+        </a>
+      ))}
+    </div>
+  );
+};
 
   return (
     <div className="flex h-screen bg-gray-100">
