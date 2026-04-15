@@ -7,13 +7,6 @@ const ContractorDashboard = () => {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar - Consistent UNCC Green */}
       <Sidebar role="contractor" userName={username} />
-      <div className="w-64 bg-[#005035] text-white hidden md:flex flex-col">
-        <div className="p-6 text-2xl font-bold border-b border-[#A49665]">Field Portal</div>
-        <nav className="flex-1 mt-4">
-          <a href="#" className="block py-3 px-6 bg-[#A49665]/20 border-l-4 border-[#A49665]">Active Jobs</a>
-          <a href="#" className="block py-3 px-6 hover:bg-[#A49665] transition">Inventory</a>
-        </nav>
-      </div>
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white border-b p-4 flex justify-between items-center">

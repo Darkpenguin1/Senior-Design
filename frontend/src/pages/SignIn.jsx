@@ -76,11 +76,6 @@ const SignIn = () => {
   </p>
 </div>
 
-{/* Footer info */}
-<div className="mt-6 pt-6 border-t border-gray-100 text-center">
-  <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Senior Design Project 2026</p>
-</div>
-
         {/* Footer info */}
         <div className="mt-10 pt-6 border-t border-gray-100 text-center">
           <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Senior Design Project 2026</p>
