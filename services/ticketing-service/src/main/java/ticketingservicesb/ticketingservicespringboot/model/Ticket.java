@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "tickets")
@@ -114,6 +115,11 @@ public class Ticket {
 
     public void setContractor(Contractor contractor) {
         this.contractor = contractor;
+    }
+
+    @JsonProperty("assignedTo")
+    public String getAssignedToName() {
+        return contractor != null ? contractor.getName() : null;
     }
 
     public LocalDateTime getCreatedAt() {
