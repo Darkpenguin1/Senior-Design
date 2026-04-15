@@ -124,8 +124,8 @@ module "lambda_function" {
   environment_variables = {
     WORK_ORDERS_TABLE_NAME = module.dynamodb.table_name
     SES_FROM_EMAIL         = "frank.e.peraza@gmail.com"
-    SES_TO_EMAIL           = "frank.e.peraza@gmail.com" # Change demo email later for now frank -> frank email 
-  }                                                     # jmcken19@charlotte.edu
+    SES_TO_EMAIL           = "jmcken19@charlotte.edu" # Change demo email later for now frank -> frank email 
+  }                                                   # jmcken19@charlotte.edu
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
@@ -254,7 +254,7 @@ module "ecs_service" {
 
   name              = "ticketing-service-dev"
   cluster_id        = module.ecs_cluster.id
-  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v10" # REMEMBER TO UPDATE THIS MANUALLY AHHHHHHHHHHHHHH
+  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v11" # REMEMBER TO UPDATE THIS MANUALLY AHHHHHHHHHHHHHH
   container_port    = 8080
   aws_region        = "us-east-1"
   subnet_ids        = var.app_subnet_ids
