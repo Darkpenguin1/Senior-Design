@@ -269,6 +269,8 @@ module "ecs_service" {
     AWS_S3_BUCKET              = module.ticket_images_bucket.bucket_name
     AWS_REGION                 = "us-east-1"
     AWS_CDN_URL                = module.cdn.distribution_domain_name
+    JWT_SECRET                 = var.jwt_secret
+    JWT_EXPIRATION_MS          = "3600000"
   }
 }
 module "db_subnet_group" {

@@ -13,3 +13,8 @@ variable "app_subnet_ids" {
   description = "Subnets for ECS service"
   type        = list(string)
 }
+
+variable "jwt_secret" {
+  type      = string
+  sensitive = true
+}
