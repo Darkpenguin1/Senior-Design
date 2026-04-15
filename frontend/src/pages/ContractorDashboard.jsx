@@ -89,19 +89,19 @@ const ContractorDashboard = () => {
                           {active.priority}
                         </p>
                       </div>
-                      {active.photoUrls?.[0] && (
+                     
+                      {active.photoUrls && active.photoUrls.length > 0 && (
                         <div>
-                          <p className="text-gray-400">Photo</p>
-                          <a>
-                            href={active.photoUrls[0]}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[#005035] font-semibold hover:underline"
-                          
-                            View photo
-                          </a>
-                        </div>
-                      )}
+                          <p className="text-gray-400 mb-2">Photos</p>
+                            <div className="flex flex-wrap gap-2">
+                              {active.photoUrls.map((url, index) => (
+                                <a key={index} href={url} target="_blank" rel="noreferrer">
+                                  <img src={url} alt="ticket" className="w-24 h-24 object-cover rounded-lg hover:opacity-80 transition" />
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                     </div>
 
                     <button
