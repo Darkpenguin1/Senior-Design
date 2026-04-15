@@ -254,7 +254,7 @@ module "ecs_service" {
 
   name              = "ticketing-service-dev"
   cluster_id        = module.ecs_cluster.id
-  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v11" # REMEMBER TO UPDATE THIS MANUALLY AHHHHHHHHHHHHHH
+  image             = "318942626726.dkr.ecr.us-east-1.amazonaws.com/ticketing-service:v13" # REMEMBER TO UPDATE THIS MANUALLY AHHHHHHHHHHHHHH
   container_port    = 8080
   aws_region        = "us-east-1"
   subnet_ids        = var.app_subnet_ids
