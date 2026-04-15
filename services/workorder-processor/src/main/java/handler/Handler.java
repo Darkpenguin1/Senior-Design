@@ -56,6 +56,7 @@ public class Handler implements RequestHandler<SQSEvent, Void> {
                 service.processTicketCreated(ticketEvent);
                 
                 context.getLogger().log("Created work order for ticket " + ticketEvent.getTicketId() + "\n");
+                ticketEvent.setContractorEmail(recipient);
 
                 String subject = "New Work Order Created";
 
